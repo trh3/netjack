@@ -1,0 +1,13 @@
+{
+    "path" : "E:/Dropbox/netjack/R",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 4
+        },
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
