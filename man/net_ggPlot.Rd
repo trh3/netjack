@@ -8,7 +8,7 @@ net_ggPlot(netSampleStatSet, labels, sort = "alpha", p.threshold = 0.05,
   p.adjust = "BY", hide.non.sig = F, non.parametric = F)
 }
 \arguments{
-\item{netSampleStatSet}{Input NetSampleStatSet}
+\item{netSampleStatSet}{Input \code{NetSampleStatSet}}
 
 \item{labels}{ggplot2 labs object. Labels for the plot}
 

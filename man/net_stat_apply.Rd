@@ -5,7 +5,7 @@
 \alias{net_stat_apply}
 \alias{net_stat_apply,NetSet-method}
 \alias{net_stat_apply,NetSampleSet-method}
-\title{Apply a network statistic function to a NetSet or NetSampleSet object.}
+\title{Apply a network statistic function to a \code{NetSet} or \code{NetSampleSet} object.}
 \usage{
 net_stat_apply(netSet, net.stat.fun, net.stat.fun.args, net.stat.name)
 
@@ -16,7 +16,7 @@ net_stat_apply(netSet, net.stat.fun, net.stat.fun.args, net.stat.name)
   net.stat.name)
 }
 \arguments{
-\item{netSet}{A NetSet or NetSampleSet object.}
+\item{netSet}{A \code{NetSet} or \code{NetSampleSet} object.}
 
 \item{net.stat.fun}{The network statistic function}
 
@@ -27,10 +27,10 @@ statistic function}
 deparsed name of statistic function)}
 }
 \value{
-A NetStatSet or NetSampleStatSet
+A \code{NetStatSet} or \code{NetSampleStatSet}
 }
 \description{
-This function applies a network statistic function to a NetSet or NetSampleSet
+This function applies a network statistic function to a \code{NetSet} or \code{NetSampleSet}
 object, and returns the calculated network statistics.
 }
 \section{Methods (by class)}{

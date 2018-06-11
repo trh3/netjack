@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1528391292829.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "767582217",
+    "id" : "12BBB219",
+    "lastKnownWriteTime" : 1528660801,
+    "last_content_update" : 1528660801630,
+    "path" : "~/GitHub/netjack/R/network_functions.R",
+    "project_path" : "R/network_functions.R",
+    "properties" : {
+        "cursorPosition" : "46,42",
+        "scrollLine" : "34"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

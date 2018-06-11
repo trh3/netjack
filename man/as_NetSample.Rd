@@ -2,7 +2,7 @@
 % Please edit documentation in R/net_apply.R
 \name{as_NetSample}
 \alias{as_NetSample}
-\title{Constructor for a NetSample object}
+\title{Constructor for a \code{NetSample} object}
 \usage{
 as_NetSample(matrixList, net.names, node.variables, sample.variables)
 }
@@ -17,9 +17,9 @@ every network in the sample.}
 \item{sample.variables}{A list of network level variables.}
 }
 \value{
-A NetSample instance.
+A \code{NetSample} instance.
 }
 \description{
-This function takes a list of adjacency matrices, and returns a NetSample
+This function takes a list of adjacency matrices, and returns a \code{NetSample}
 object.
 }

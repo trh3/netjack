@@ -19,29 +19,23 @@ relative_threshold(Net, percentiles)
 \arguments{
 \item{Net}{Network to jackknife}
 
-\item{network.variable}{character name of node variable containing network labels}
+\item{network.variable}{Character name of node variable containing network labels}
 
 \item{thresholds}{Vector of thresholds to use}
 
 \item{percentiles}{Vector of densities to threshold at}
 }
 \value{
-A list of Net objects
-
-A list of Net objects
-
-A list of Net objects, named at threshold level.
-
-List of net objects with named at the density threshold.
+A \code{list} of \code{Net} objects
 }
 \description{
-Network Manipulation Functions
+These functions take a \code{Net} object, manipulate the network in some way, and return a \code{list} of modified \code{Net} objects.
 
-Removes each node in turn from the Net, and returns a list of jackknifed Net objects
+\code{node_jacknife}. Removes each node in turn from the \code{Net}, and returns a list of jackknifed \code{Net} objects.
 
-Removes each subnetwork in turn from the Net, and returns a list of jackknifed Net objects
+\code{network_jackknife} - Removes each subnetwork in turn from the \code{Net}, and returns a list of jackknifed \code{Net} objects
 
-Applies an absolute thresholding to target network, returning a binary network.
+\code{absolute_threshold} - Applies a series of absolute thresholding to target network, returning a binary network.
 
-Applies a relative threshold based on target density to target network
+\code{relative_threshold} -  Applies a relative threshold based on target density to target network
 }

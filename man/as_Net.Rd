@@ -14,9 +14,9 @@ as_Net(matrix, net.name, node.variables)
 \item{node.variables}{Node level variables (optional)}
 }
 \value{
-A Net instance
+A \code{Net} object
 }
 \description{
 This function takes a single network, as an adjacency matrix, and returns a
-Net object.
+\code{Net} object.
 }

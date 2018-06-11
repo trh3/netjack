@@ -7,7 +7,7 @@
 diff_test(netSampleStatSet, p.adjust = "BH", non.parametric = F)
 }
 \arguments{
-\item{netSampleStatSet}{Input NetSampleStatSet}
+\item{netSampleStatSet}{Input \code{NetSampleStatSet}}
 
 \item{p.adjust}{character string for requested multiple comparisons
 adjustment. Defaults to Benjamani-Hochberg}

@@ -8,7 +8,7 @@ group_diff_test(netSampleStatSet, grouping.variable, p.adjust = "BY",
   non.parametric = F)
 }
 \arguments{
-\item{netSampleStatSet}{Input NetSampleStatSet}
+\item{netSampleStatSet}{Input \code{NetSampleStatSet}}
 
 \item{grouping.variable}{character name of sample level grouping variable}
 

@@ -14,7 +14,7 @@ to_data_frame(netStatSet)
 \S4method{to_data_frame}{NetSampleStatSet}(netStatSet)
 }
 \arguments{
-\item{netStatSet}{A NetStatSet or NetSampleStatSet object}
+\item{netStatSet}{A \code{NetStatSet} or \code{NetSampleStatSet} object}
 }
 \value{
 A long format dataframe containing the name of the original network,
@@ -23,7 +23,7 @@ A long format dataframe containing the name of the original network,
   network statistic.
 }
 \description{
-This function converts a NetStatSet or NetSampleStatSet into a long format
+This function converts a \code{NetStatSet} or \code{NetSampleStatSet} into a long format
 dataframe
 }
 \section{Methods (by class)}{

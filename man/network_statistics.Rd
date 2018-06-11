@@ -4,26 +4,27 @@
 \alias{network_statistics}
 \alias{global_efficiency}
 \alias{modularity}
-\title{Network Manipulation Functions}
+\title{Network Statistic Functions}
 \usage{
 global_efficiency(Net)
 
 modularity(Net, community.variable)
 }
 \arguments{
-\item{Net}{Input Net}
+\item{Net}{Input \code{Net} object}
 
 \item{community.variable}{character name of the node variable that represents the partition.}
 }
 \value{
-global efficiency value
-
-modularity value
+Network statistic value
 }
 \description{
-Network Manipulation Functions
+These functions compute a variety of network statistics on single \code{Net} objects.
 
-Computes global efficiency
+\code{global_efficiency} - Computes global efficiency. Uses brainGraph implementation \insertCite{brainGraph}{netjack}. Global efficiency originally derived by \insertCite{globEff;textual}{netjack}
 
-Computes modularity with a given partition
+\code{modularity} - Computes modularity with a given community partition. Uses \code{igraph} implementation \insertCite{igraph}{netjack}. Modularity originally derived by \insertCite{mod;textual}{netjack}
+}
+\references{
+\insertAllCited{}
 }

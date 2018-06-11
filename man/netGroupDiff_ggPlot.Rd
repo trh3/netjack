@@ -9,7 +9,7 @@ netGroupDiff_ggPlot(netSampleStatSet, grouping.variable, labels,
   non.parametric = F)
 }
 \arguments{
-\item{netSampleStatSet}{Input NetSampleStatSet}
+\item{netSampleStatSet}{Input \code{NetSampleStatSet}}
 
 \item{grouping.variable}{character name of sample level grouping variable}
 

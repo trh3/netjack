@@ -17,7 +17,7 @@ net_apply(network, net.function, net.function.args, orig.net.name)
   net.function.args, orig.net.name)
 }
 \arguments{
-\item{network}{An Net object or a NetSample object}
+\item{network}{An \code{Net} object or a \code{NetSample} object}
 
 \item{net.function}{A network manipulation function (reference or character)}
 
@@ -25,10 +25,10 @@ net_apply(network, net.function, net.function.args, orig.net.name)
 net.function}
 
 \item{orig.net.name}{The original network name, when applying net_apply to a
-Net}
+\code{Net}}
 }
 \value{
-A NetSet or NetSampleSet object
+A \code{NetSet} or \code{NetSampleSet} object
 }
 \description{
 This function applies a network manipulation function to a single network or
