@@ -1,5 +1,0 @@
-"0","fullGroup = c(GroupA, GroupB)"
-"0","fullSamp = as_NetSample(fullGroup,net.names = as.character(1:40), sample.variables = list(group = c(rep(""GroupA"", 20), rep(""GroupB"", 20))))"
-"0","fullSampJackknifed = net_apply(fullSamp, net.function = ""node_jackknife"")"
-"0","fullSampleJackknifedGlobEff = net_stat_apply(fullSampJackknifed, net.stat.fun = ""global_efficiency"")"
-"0","group_test(fullSampleJackknifedGlobEff, grouping.variable = ""group"")"

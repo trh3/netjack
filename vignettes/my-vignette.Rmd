@@ -1,58 +1,42 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Developing New Network Functions and Network Statistics for `netjack`"
+author: "Teague Henry"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{developingNetjack}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+This vignettes outlines how to develop custom _network manipulation functions_ and _network statistic functions_ for the `netjack` package. `netjack` was designed to be an easily extendible framework for working with large sets of networks, and the two entry points for custom development are:
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+- Functions that change networks
+- Functions that calculate network statistics
 
-## Vignette Info
+We will go through how to develop custom functions now. This  
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
 
-## Styles
+###Network Manipulation Functions
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+A custom network manipulation function takes as its argument a `Net` object and any additional arguments for the procedure, and returns a named list of `Net` objects. For example, this is the function to perform the node jackknife procedure. This removes each node from the network in turn, and produces a list of `Net` objects, each named for the node that has been removed.
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+node_jackknife = function(Net){
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+  toReturn = list()
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+  for(i in 1:dim(Net@net)[[1]]){
+    toReturn[[i]] = methods::new("Net", net = Net@net[-i,-i],
+                        net.name = Net@net.name,
+                        node.variables = lapply(Net@node.variables, function(x, i){
+                          return(x[-i])
+                        }, i = i))
+  }
+  names(toReturn) = as.character(1:dim(Net@net)[[1]])
+  return(toReturn)
+}
 
-## More Examples
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
 ```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))

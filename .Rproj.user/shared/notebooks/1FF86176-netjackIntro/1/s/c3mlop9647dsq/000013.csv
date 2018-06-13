@@ -1,4 +1,0 @@
-"0","GroupASamp = as_NetSample(GroupA, net.names = as.character(1:20))"
-"0","GroupAJackknifed = net_apply(GroupASamp, net.function = ""node_jackknife"")"
-"0","GroupAJackknifedGlobEff = net_stat_apply(GroupAJackknifed, net.stat.fun =  ""global_efficiency"")"
-"0","diff_test(GroupAJackknifedGlobEff)"

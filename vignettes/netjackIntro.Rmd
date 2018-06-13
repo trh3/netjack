@@ -183,5 +183,5 @@ netGroupDiff_ggPlot(fullSampleJackknifedGlobEff, grouping.variable="group")
 
 ```
 
-
+From this, we can see that when node 10 or node 15 are removed, this results in a significantly different change from the original global efficiency value between Group A and Group B.
 
