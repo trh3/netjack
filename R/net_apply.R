@@ -319,7 +319,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
     sub$subDiff = sub$nets.stat-sub$orig.stat
     form = stats::as.formula(form)
     if(non.parametric){
-      groupTest <- stats::kruskal.test(form, toPlot = sub)
+      groupTest <- stats::kruskal.test(form, data = sub)
       return(data.frame(net.names = name, p = groupTest$p.value))
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
