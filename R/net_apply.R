@@ -357,7 +357,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
     sub$subDiff = sub$nets.stat-sub$orig.stat
     form = stats::as.formula(form)
     if(non.parametric){
-      groupTest <- stats::kruskal.test(form, toPlot = sub)
+      groupTest <- stats::kruskal.test(form, data = sub)
       return(data.frame(net.names = name, p = groupTest$p.value))
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
@@ -472,7 +472,7 @@ toPlot = to_data_frame(netSampleStatSet)
 
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold)))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                       paste0("p <", p.threshold))) +ggplot2::theme_classic()
+                                                                                                       paste0("p < ", p.threshold))) +ggplot2::theme_classic()
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0("Difference from Original ", toPlot$stat.name[1]))
@@ -529,7 +529,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
 
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = nets.stat, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                       paste0("p <", p.threshold)))+
+                                                                                                       paste0("p < ", p.threshold)))+
     ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
 
   if(missing(labels)){
@@ -586,7 +586,7 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   toPlot$diff = toPlot$nets.stat - toPlot$orig.stat
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                                                                 paste0("p <", p.threshold)))+
+                                                                                                                                                 paste0("p < ", p.threshold)))+
     ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
 
   if(missing(labels)){
