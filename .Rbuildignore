@@ -1,2 +1,10 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^.*\README\.md$
+^.*\.gitattributes$
+^.*\.gitignore$
+^README\.md$       
+^cran-comments\.md$ 
+^NEWS\.md$  
+^README\.md$
+^NEWS\.md$
