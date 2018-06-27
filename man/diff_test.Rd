@@ -24,3 +24,11 @@ This function tests for significant differences from the original network
 statistic as a result of the network manipulation. If non-parametric is
 chosen, this is done using the Wilcox test, otherwise, Welch's t-test.
 }
+\examples{
+data(GroupA)
+GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+  sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+diff_test(GlobEff_GroupA_Net)
+}

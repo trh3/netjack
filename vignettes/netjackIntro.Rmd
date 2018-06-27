@@ -150,7 +150,7 @@ GroupAJackknifed = net_apply(GroupASamp, net.function = "node_jackknife")
 GroupAJackknifedGlobEff = net_stat_apply(GroupAJackknifed, net.stat.fun =  "global_efficiency")
 
 diff_test(GroupAJackknifedGlobEff)
-net_ggPlot(GroupAJackknifedGlobEff)
+diff_test_ggPlot(GroupAJackknifedGlobEff)
 
 
 ```
@@ -170,7 +170,7 @@ fullSampleJackknifedGlobEff = net_stat_apply(fullSampJackknifed, net.stat.fun = 
 
 group_test(fullSampleJackknifedGlobEff, grouping.variable = "group")
 
-netGroup_ggPlot(fullSampleJackknifedGlobEff, grouping.variable="group")
+group_test_ggPlot(fullSampleJackknifedGlobEff, grouping.variable="group")
 
 ```
 
@@ -179,7 +179,7 @@ Finally, the group difference test assesses if the network manipulation has a di
 ```{r fig.height=5, fig.width=6, fig.align="center"}
 group_diff_test(fullSampleJackknifedGlobEff, grouping.variable = "group")
 
-netGroupDiff_ggPlot(fullSampleJackknifedGlobEff, grouping.variable="group")
+group_diff_test_ggPlot(fullSampleJackknifedGlobEff, grouping.variable="group")
 
 ```
 

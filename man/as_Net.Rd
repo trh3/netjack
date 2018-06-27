@@ -20,3 +20,7 @@ A \code{Net} object
 This function takes a single network, as an adjacency matrix, and returns a
 \code{Net} object.
 }
+\examples{
+data(GroupA)
+GroupA1_Net = as_Net(GroupA[[1]], "1", list(group = c(rep(1, 10), rep(2,10))))
+}

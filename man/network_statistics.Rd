@@ -25,6 +25,12 @@ These functions compute a variety of network statistics on single \code{Net} obj
 
 \code{modularity} - Computes modularity with a given community partition. Uses \code{igraph} implementation \insertCite{igraph}{netjack}. Modularity originally derived by \insertCite{mod;textual}{netjack}
 }
+\examples{
+data(GroupA)
+GroupA1_Net = as_Net(GroupA[[1]], "1", list(community = c(rep(1, 10), rep(2,10))))
+global_efficiency(GroupA1_Net)
+modularity(GroupA1_Net, "community")
+}
 \references{
 \insertAllCited{}
 }

@@ -3,7 +3,11 @@
 #'These functions take a \code{Net} object, manipulate the network in some way, and return a \code{list} of modified \code{Net} objects.
 #'
 #'@name network_functions
-#'
+#' @examples
+#' data(GroupA)
+#' GroupA1_Net = as_Net(GroupA[[1]], "1", list(community = c(rep(1, 10), rep(2,10))))
+#' node_jackknife(GroupA1_Net)
+#' network_jackknife(GroupA1_Net, "community")
 NULL
 
 
