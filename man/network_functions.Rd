@@ -39,3 +39,9 @@ These functions take a \code{Net} object, manipulate the network in some way, an
 
 \code{relative_threshold} -  Applies a relative threshold based on target density to target network
 }
+\examples{
+data(GroupA)
+GroupA1_Net = as_Net(GroupA[[1]], "1", list(community = c(rep(1, 10), rep(2,10))))
+node_jackknife(GroupA1_Net)
+network_jackknife(GroupA1_Net, "community")
+}

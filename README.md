@@ -5,6 +5,6 @@ This is the development repo for netjack, a R package for working with, and anal
 
 This package is specifically designed for analysis of neuroimaging networks, and the core functionality is built around registered networks, or networks that share the same node set.
 
-As of now, this package is installable, and has minimum documentation. Examples and expanded documentation will be added soon, and a release version will be added on CRAN. For now, interested users can install netjack using the following command:
+There is no guarantee that this development repo will install nicely/play nicely with others. Use at your own risk. For versions that do install nicely and have been bug checked, please see:
 
-`devtools::install_github("trh3/netjack")`
+https://cran.r-project.org/web/packages/netjack/index.html

@@ -11,7 +11,11 @@
 #' @return A \code{Net} object
 #' @export
 #'
+#' @examples
+#' data(GroupA)
+#' GroupA1_Net = as_Net(GroupA[[1]], "1", list(group = c(rep(1, 10), rep(2,10))))
 as_Net <- function(matrix, net.name, node.variables){
+  net.name = as.character(net.name)
   if(missing(node.variables)){
     node.variables = list(index = 1:dim(matrix)[[1]])
   }else{
@@ -40,7 +44,12 @@ as_Net <- function(matrix, net.name, node.variables){
 #' @return A \code{NetSample} instance.
 #' @export
 #'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'  sample.variables = list(group = c(rep(1, 10), rep(2,10))))
 as_NetSample <- function(matrixList, net.names, node.variables, sample.variables){
+  net.names = as.character(net.names)
   temp = list()
   if(missing(sample.variables)){
     sample.variables = list()
@@ -73,6 +82,11 @@ as_NetSample <- function(matrixList, net.names, node.variables, sample.variables
 #' @return A \code{NetSet} or \code{NetSampleSet} object
 #' @export
 #'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'  sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 setGeneric("net_apply", function(network, net.function, net.function.args, orig.net.name) {
   standardGeneric("net_apply")
 })
@@ -147,6 +161,12 @@ setMethod("net_apply", signature = c(network = "NetSample", net.function = "ANY"
 #'@return A \code{NetStatSet} or \code{NetSampleStatSet}
 #'@export
 #'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'  sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 setGeneric("net_stat_apply", function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name) {
   standardGeneric("net_stat_apply")
 })
@@ -218,7 +238,13 @@ setMethod("net_stat_apply", signature = c(netSet = "NetSampleSet", net.stat.fun 
 #'   network, the manipulated network network statistic and the name of the
 #'   network statistic.
 #' @export
-#'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' head(to_data_frame(GlobEff_GroupA_Net))
 setGeneric("to_data_frame", function(netStatSet) {
   standardGeneric("to_data_frame")
 })
@@ -263,7 +289,13 @@ setMethod("to_data_frame", signature = c(netStatSet = "NetSampleStatSet"),
 #' @return A data frame containing original and adjusted p.values, as well as
 #'   differences, labeled with manipulation name.
 #' @export
-#'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' diff_test(GlobEff_GroupA_Net)
 diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
@@ -307,7 +339,13 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #'
 #' @return A data frame containing original and adjusted p.values.
 #' @export
-#'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' group_diff_test(GlobEff_GroupA_Net, grouping.variable = "group")
  group_diff_test = function(netSampleStatSet,grouping.variable, p.adjust = "BY", non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
@@ -319,7 +357,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
     sub$subDiff = sub$nets.stat-sub$orig.stat
     form = stats::as.formula(form)
     if(non.parametric){
-      groupTest <- stats::kruskal.test(form, toPlot = sub)
+      groupTest <- stats::kruskal.test(form, data = sub)
       return(data.frame(net.names = name, p = groupTest$p.value))
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
@@ -352,6 +390,13 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #'
  #' @return A data frame containing original and adjusted p.values.
  #' @export
+ #' @examples
+ #' data(GroupA)
+ #' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+ #'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+ #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+ #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+ #' group_test(GlobEff_GroupA_Net, grouping.variable = "group")
 group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.parametric = F){
   toPlot <- to_data_frame(netSampleStatSet)
   form = paste0("nets.stat", "~", grouping.variable)
@@ -374,7 +419,7 @@ group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.
   return(results)
 }
 
-
+utils::globalVariables(c("net.names", "nets.stat", "adjusted.p"))
 
 #' Difference Test Plots
 #'
@@ -388,8 +433,14 @@ group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.
 #'
 #' @return A ggplot object
 #' @export
-#'
-net_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F,non.parametric = F){
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' diff_test_ggPlot(GlobEff_GroupA_Net)
+diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F,non.parametric = F){
 
 toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- diff_test(netSampleStatSet, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -397,19 +448,19 @@ toPlot = to_data_frame(netSampleStatSet)
   toPlot$diff = toPlot$nets.stat - toPlot$orig.stat
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-        toPlot$net.names = factor(toPlot$net.names, level = sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
       }
   }
   if(sort == "mean"){
     agg <- stats::aggregate(toPlot$diff, by = toPlot["net.names"], mean, na.rm = T)
     ord = order(agg$x)
-    toPlot$net.names = factor(toPlot$net.names, level = agg$net.names[ord])
+    toPlot$net.names = factor(toPlot$net.names, levels =  agg$net.names[ord])
   }
 
   if(sort == "median"){
     agg <- stats::aggregate(toPlot$diff, by = toPlot["net.names"], stats::median, na.rm = T)
     ord = order(agg$x)
-    toPlot$net.names = factor(toPlot$net.names, level = agg$net.names[ord])
+    toPlot$net.names = factor(toPlot$net.names, levels =  agg$net.names[ord])
   }
 
   if(!hide.non.sig){
@@ -421,7 +472,7 @@ toPlot = to_data_frame(netSampleStatSet)
 
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold)))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                       paste0("p <", p.threshold))) +ggplot2::theme_classic()
+                                                                                                       paste0("p < ", p.threshold))) +ggplot2::theme_classic()
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0("Difference from Original ", toPlot$stat.name[1]))
@@ -444,8 +495,14 @@ toPlot = to_data_frame(netSampleStatSet)
 #'
 #' @return A ggplot object
 #' @export
-#'
-netGroup_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' group_test_ggPlot(GlobEff_GroupA_Net, "group")
+group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -453,13 +510,13 @@ netGroup_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "
 
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-        toPlot$net.names = factor(toPlot$net.names, level = sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
       }
   }
   if(sort == "mag"){
     agg <- stats::aggregate(toPlot$adjusted.p, by = toPlot["net.names"], mean, na.rm = T)
     ord = order(agg$x, decreasing = T)
-    toPlot$net.names = factor(toPlot$net.names, level = agg$net.names[ord])
+    toPlot$net.names = factor(toPlot$net.names, levels =  agg$net.names[ord])
   }
 
   if(!hide.non.sig){
@@ -472,7 +529,7 @@ netGroup_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "
 
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = nets.stat, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                       paste0("p <", p.threshold)))+
+                                                                                                       paste0("p < ", p.threshold)))+
     ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
 
   if(missing(labels)){
@@ -495,7 +552,14 @@ netGroup_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "
 #'
 #' @return A ggplot object
 #' @export
-netGroupDiff_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' group_diff_test_ggPlot(GlobEff_GroupA_Net, "group")
+group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_diff_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -503,13 +567,13 @@ netGroupDiff_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort
 
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-      toPlot$net.names = factor(toPlot$net.names, level = sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
     }
   }
   if(sort == "mag"){
     agg <- stats::aggregate(toPlot$adjusted.p, by = toPlot["net.names"], mean, na.rm = T)
     ord = order(agg$x, decreasing = T)
-    toPlot$net.names = factor(toPlot$net.names, level = agg$net.names[ord])
+    toPlot$net.names = factor(toPlot$net.names, levels =  agg$net.names[ord])
   }
 
   if(!hide.non.sig){
@@ -522,7 +586,7 @@ netGroupDiff_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort
   toPlot$diff = toPlot$nets.stat - toPlot$orig.stat
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                                                                 paste0("p <", p.threshold)))+
+                                                                                                                                                 paste0("p < ", p.threshold)))+
     ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
 
   if(missing(labels)){

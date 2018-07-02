@@ -42,3 +42,9 @@ results.
 \item \code{network = NetSample,net.function = ANY,net.function.args = ANY,orig.net.name = missing}: net_apply for NetSample
 }}
 
+\examples{
+data(GroupA)
+GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+ sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+}

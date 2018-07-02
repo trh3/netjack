@@ -23,3 +23,8 @@ A \code{NetSample} instance.
 This function takes a list of adjacency matrices, and returns a \code{NetSample}
 object.
 }
+\examples{
+data(GroupA)
+GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+ sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+}
