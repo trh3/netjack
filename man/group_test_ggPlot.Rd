@@ -5,7 +5,7 @@
 \title{Group Test Plots}
 \usage{
 group_test_ggPlot(netSampleStatSet, grouping.variable, labels, sort = "alpha",
-  p.threshold = 0.05, p.adjust = "BY", hide.non.sig = F,
+  p.threshold = 0.05, p.adjust = "BH", hide.non.sig = F,
   non.parametric = F)
 }
 \arguments{

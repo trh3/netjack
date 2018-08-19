@@ -353,7 +353,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
   results = lapply(net.names,FUN = function(name, toPlot){
     sub = toPlot[which(toPlot$net.names == name),]
     sub$subDiff = sub$nets.stat-sub$orig.stat
-    subMeans = aggregate(sub$subDiff, by = sub[grouping.variable], mean, na.rm = T)
+    subMeans = stats::aggregate(sub$subDiff, by = sub[grouping.variable], mean, na.rm = T)
     form = stats::as.formula(form)
     if(non.parametric){
       groupTest <- stats::kruskal.test(form, data = sub)
@@ -410,7 +410,7 @@ group_test = function(netSampleStatSet, grouping.variable, p.adjust = "none", no
   results = lapply(net.names,FUN = function(name, toPlot){
 
     sub = toPlot[which(toPlot$net.names == name),]
-    subMeans = aggregate(sub$nets.stat, by = sub[grouping.variable], mean, na.rm = T)
+    subMeans = stats::aggregate(sub$nets.stat, by = sub[grouping.variable], mean, na.rm = T)
     if(non.parametric){
       groupTest <- stats::kruskal.test(form, data = sub)
       toReturn = data.frame(net.names = name, p = groupTest$p.value)
@@ -452,7 +452,7 @@ utils::globalVariables(c("net.names", "nets.stat", "adjusted.p"))
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' diff_test_ggPlot(GlobEff_GroupA_Net)
-diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F,non.parametric = F){
+diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F,non.parametric = F){
 
 toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- diff_test(netSampleStatSet, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -514,7 +514,7 @@ toPlot = to_data_frame(netSampleStatSet)
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_test_ggPlot(GlobEff_GroupA_Net, "group")
-group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -571,7 +571,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_diff_test_ggPlot(GlobEff_GroupA_Net, "group")
-group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_diff_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -609,72 +609,6 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   return(p)
 }
 
-
-#' Wrapper for pairwise comparison functions.
-#' @return
-#' @export
-#' @keywords internal
-
-pairwise_fun_wrapper <- function(index1, index2, nets, net.stat.fun, net.stat.fun.args ){
-  return(do.call(net.stat.fun, args = c(list(nets[[index1]], nets[[index2]]), net.stat.fun.args)))
-}
-
-
-setGeneric("pairwise_net_stat_apply", function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name, symmetric = TRUE, self.comp = FALSE) {
-  standardGeneric("pairwise_net_stat_apply")
-})
-
-#' @describeIn pairwise_net_stat_apply net_stat_apply for NetSample
-setMethod("pairwise_net_stat_apply", signature = c(netSet = "NetSample", net.stat.fun = "ANY",
-                                          net.stat.fun.args = "ANY", net.stat.name = "ANY",
-                                          symmetric = "ANY", self.comp = "ANY"),
-          function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name, symmetric = TRUE, self.comp = FALSE){
-            if(missing(net.stat.name)){
-              net.stat.name = deparse(substitute(net.stat.fun))
-            }
-            net.stat.fun = match.fun(net.stat.fun)
-            if(missing(net.stat.fun.args)){
-              net.stat.fun.args = list()
-            }
-
-            nNets = length(netSet@nets)
-
-            if(symmetric){
-              index = t(combn(1:nNets, 2))
-            }else{
-              index = t(cbind(combn(1:nNets, 2), combn(nNets:1, 2)))
-            }
-
-            if(self.comp){
-              index = rbind(index,cbind(1:nNets, 1:nNets))
-            }
-
-
-
-
-
-
-            pairwise.vector = mapply(FUN = pairwise_fun_wrapper,index1 = index[,1], index2 = index[,2],
-                                     MoreArgs = list(nets = netSet@nets, net.stat.fun = net.stat.fun,
-                                                     net.stat.fun.args = net.stat.fun.args))
-
-            resMat = matrix(NA, nNets, nNets)
-
-            resMat[index] = pairwise.vector
-
-            #
-            # toReturn = methods::new("NetStatSet",fun = netSet@fun,
-            #                         fun.name = netSet@fun.name,
-            #                         fun.args = netSet@fun.args,
-            #                         stat.fun = net.stat.fun,
-            #                         stat.fun.name = net.stat.name,
-            #                         stat.fun.args = net.stat.fun.args,
-            #                         orig.net.name = netSet@orig.net.name,
-            #                         orig.net.stat = orig.stat,
-            #                         nets.stat = nets.stat,
-            #                         nets.names = netSet@nets.names)
-            return(resMat)
-          })
 
 
 
