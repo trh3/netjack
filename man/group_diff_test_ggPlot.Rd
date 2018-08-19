@@ -25,7 +25,7 @@ adjustment. Defaults to Benjamani-Hochberg}
 \item{hide.non.sig}{Logical. If true, non significant (as defined by p.threshold) are not plotted.}
 
 \item{non.parametric}{Logical. if true, test is performed using Wilcox test.
-If false, Welch's t-test. Defaults to false.}
+If false, t-test. Defaults to false.}
 }
 \value{
 A ggplot object

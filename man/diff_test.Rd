@@ -13,7 +13,7 @@ diff_test(netSampleStatSet, p.adjust = "BH", non.parametric = F)
 adjustment. Defaults to Benjamani-Hochberg}
 
 \item{non.parametric}{Logical. if true, test is performed using Wilcox test.
-If false, Welch's t-test. Defaults to false.}
+If false, t-test. Defaults to false.}
 }
 \value{
 A data frame containing original and adjusted p.values, as well as
@@ -22,7 +22,7 @@ A data frame containing original and adjusted p.values, as well as
 \description{
 This function tests for significant differences from the original network
 statistic as a result of the network manipulation. If non-parametric is
-chosen, this is done using the Wilcox test, otherwise, Welch's t-test.
+chosen, this is done using the Wilcox test, otherwise, t-test.
 }
 \examples{
 data(GroupA)

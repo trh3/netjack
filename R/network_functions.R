@@ -98,9 +98,9 @@ relative_threshold = function(Net, percentiles){
   diag(tempOrg) = NA
   toReturn = lapply(percentiles, function(x, network){
     if(toggle){
-    target = stats::quantile(as.numeric(network[upper.tri(network)]), probs = x)
+    target = stats::quantile(as.numeric(network[upper.tri(network)]), probs = 1-x)
     }else{
-      target = stats::quantile(as.numeric(network), probs = x, na.rm = T)
+      target = stats::quantile(as.numeric(network), probs = 1-x, na.rm = T)
     }
     temp = (network > target)*1
     return(methods::new("Net", net = temp, net.name = Net@net.name, node.variables = Net@node.variables))

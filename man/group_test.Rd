@@ -4,7 +4,7 @@
 \alias{group_test}
 \title{Group test}
 \usage{
-group_test(netSampleStatSet, grouping.variable, p.adjust = "BY",
+group_test(netSampleStatSet, grouping.variable, p.adjust = "none",
   non.parametric = F)
 }
 \arguments{
@@ -13,10 +13,10 @@ group_test(netSampleStatSet, grouping.variable, p.adjust = "BY",
 \item{grouping.variable}{character name of sample level grouping variable}
 
 \item{p.adjust}{character string for requested multiple comparisons
-adjustment. Defaults to Benjamani-Hochberg}
+adjustment. Defaults to none.}
 
 \item{non.parametric}{Logical. if true, test is performed using Wilcox test.
-If false, Welch's t-test. Defaults to false.}
+If false, t-test. Defaults to false.}
 }
 \value{
 A data frame containing original and adjusted p.values.
@@ -27,7 +27,7 @@ assesses if the network statistic is significantly different between groups,
 at each network manipulation.
 }
 \details{
-If the sample has 2 groups, this test is performed using Welch's t-test or
+If the sample has 2 groups, this test is performed using a t-test or
 Wilcox test. If the sample has 3 or more groups, the test is performed using
 a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each
 network manipulation.
