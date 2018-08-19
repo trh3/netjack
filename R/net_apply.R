@@ -609,3 +609,73 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   return(p)
 }
 
+
+#' Wrapper for pairwise comparison functions.
+#' @return
+#' @export
+#' @keywords internal
+
+pairwise_fun_wrapper <- function(index1, index2, nets, net.stat.fun, net.stat.fun.args ){
+  return(do.call(net.stat.fun, args = c(list(nets[[index1]], nets[[index2]]), net.stat.fun.args)))
+}
+
+
+setGeneric("pairwise_net_stat_apply", function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name, symmetric = TRUE, self.comp = FALSE) {
+  standardGeneric("pairwise_net_stat_apply")
+})
+
+#' @describeIn pairwise_net_stat_apply net_stat_apply for NetSample
+setMethod("pairwise_net_stat_apply", signature = c(netSet = "NetSample", net.stat.fun = "ANY",
+                                          net.stat.fun.args = "ANY", net.stat.name = "ANY",
+                                          symmetric = "ANY", self.comp = "ANY"),
+          function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name, symmetric = TRUE, self.comp = FALSE){
+            if(missing(net.stat.name)){
+              net.stat.name = deparse(substitute(net.stat.fun))
+            }
+            net.stat.fun = match.fun(net.stat.fun)
+            if(missing(net.stat.fun.args)){
+              net.stat.fun.args = list()
+            }
+
+            nNets = length(netSet@nets)
+
+            if(symmetric){
+              index = t(combn(1:nNets, 2))
+            }else{
+              index = t(cbind(combn(1:nNets, 2), combn(nNets:1, 2)))
+            }
+
+            if(self.comp){
+              index = rbind(index,cbind(1:nNets, 1:nNets))
+            }
+
+
+
+
+
+
+            pairwise.vector = mapply(FUN = pairwise_fun_wrapper,index1 = index[,1], index2 = index[,2],
+                                     MoreArgs = list(nets = netSet@nets, net.stat.fun = net.stat.fun,
+                                                     net.stat.fun.args = net.stat.fun.args))
+
+            resMat = matrix(NA, nNets, nNets)
+
+            resMat[index] = pairwise.vector
+
+            #
+            # toReturn = methods::new("NetStatSet",fun = netSet@fun,
+            #                         fun.name = netSet@fun.name,
+            #                         fun.args = netSet@fun.args,
+            #                         stat.fun = net.stat.fun,
+            #                         stat.fun.name = net.stat.name,
+            #                         stat.fun.args = net.stat.fun.args,
+            #                         orig.net.name = netSet@orig.net.name,
+            #                         orig.net.stat = orig.stat,
+            #                         nets.stat = nets.stat,
+            #                         nets.names = netSet@nets.names)
+            return(resMat)
+          })
+
+
+
+
