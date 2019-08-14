@@ -5,7 +5,7 @@
 \title{Group Difference Plots}
 \usage{
 group_diff_test_ggPlot(netSampleStatSet, grouping.variable, labels,
-  sort = "alpha", p.threshold = 0.05, p.adjust = "BY", hide.non.sig = F,
+  sort = "alpha", p.threshold = 0.05, p.adjust = "BH", hide.non.sig = F,
   non.parametric = F)
 }
 \arguments{
@@ -25,7 +25,7 @@ adjustment. Defaults to Benjamani-Hochberg}
 \item{hide.non.sig}{Logical. If true, non significant (as defined by p.threshold) are not plotted.}
 
 \item{non.parametric}{Logical. if true, test is performed using Wilcox test.
-If false, Welch's t-test. Defaults to false.}
+If false, t-test. Defaults to false.}
 }
 \value{
 A ggplot object

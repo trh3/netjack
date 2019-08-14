@@ -4,7 +4,7 @@
 \alias{group_diff_test}
 \title{Group difference test}
 \usage{
-group_diff_test(netSampleStatSet, grouping.variable, p.adjust = "BY",
+group_diff_test(netSampleStatSet, grouping.variable, p.adjust = "BH",
   non.parametric = F)
 }
 \arguments{
@@ -16,7 +16,7 @@ group_diff_test(netSampleStatSet, grouping.variable, p.adjust = "BY",
 adjustment. Defaults to Benjamani-Hochberg}
 
 \item{non.parametric}{Logical. if true, test is performed using Wilcox test.
-If false, Welch's t-test. Defaults to false.}
+If false, t-test. Defaults to false.}
 }
 \value{
 A data frame containing original and adjusted p.values.
@@ -27,7 +27,7 @@ This test assesses if the change in the network statistic due to the network
 manipulation is significantly different between groups.
 }
 \details{
-If the sample has 2 groups, this test is performed using Welch's t-test or
+If the sample has 2 groups, this test is performed using a t-test or
 Wilcox test. If the sample has 3 or more groups, the test is performed using
 a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each network
 manipulation.

@@ -278,13 +278,13 @@ setMethod("to_data_frame", signature = c(netStatSet = "NetSampleStatSet"),
 #'
 #' This function tests for significant differences from the original network
 #' statistic as a result of the network manipulation. If non-parametric is
-#' chosen, this is done using the Wilcox test, otherwise, Welch's t-test.
+#' chosen, this is done using the Wilcox test, otherwise, t-test.
 #'
 #' @param netSampleStatSet Input \code{NetSampleStatSet}
 #' @param p.adjust character string for requested multiple comparisons
 #'   adjustment. Defaults to Benjamani-Hochberg
 #' @param non.parametric Logical. if true, test is performed using Wilcox test.
-#'   If false, Welch's t-test. Defaults to false.
+#'   If false, t-test. Defaults to false.
 #'
 #' @return A data frame containing original and adjusted p.values, as well as
 #'   differences, labeled with manipulation name.
@@ -309,7 +309,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
     if(non.parametric){
       diffTest = stats::wilcox.test(sub$nets.stats, sub$orig.stat, paired = T)
     }else{
-      diffTest = stats::t.test(subDiff)
+      diffTest = stats::t.test(subDiff, var.equal = T)
     }
     return(data.frame(net.names = name,diff = diffTest$estimate, p = diffTest$p.value))
   }, toPlot = toPlot)
@@ -325,7 +325,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #' This test assesses if the change in the network statistic due to the network
 #' manipulation is significantly different between groups.
 #'
-#' If the sample has 2 groups, this test is performed using Welch's t-test or
+#' If the sample has 2 groups, this test is performed using a t-test or
 #' Wilcox test. If the sample has 3 or more groups, the test is performed using
 #' a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each network
 #' manipulation.
@@ -335,7 +335,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #' @param p.adjust character string for requested multiple comparisons
 #'   adjustment. Defaults to Benjamani-Hochberg
 #' @param non.parametric Logical. if true, test is performed using Wilcox test.
-#'   If false, Welch's t-test. Defaults to false.
+#'   If false, t-test. Defaults to false.
 #'
 #' @return A data frame containing original and adjusted p.values.
 #' @export
@@ -346,22 +346,27 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_diff_test(GlobEff_GroupA_Net, grouping.variable = "group")
- group_diff_test = function(netSampleStatSet,grouping.variable, p.adjust = "BY", non.parametric = F){
-
+ group_diff_test = function(netSampleStatSet,grouping.variable, p.adjust = "BH", non.parametric = F){
   toPlot = to_data_frame(netSampleStatSet)
-
   net.names = names(table(toPlot$net.names))
   form = paste0("subDiff", "~", grouping.variable)
   results = lapply(net.names,FUN = function(name, toPlot){
     sub = toPlot[which(toPlot$net.names == name),]
     sub$subDiff = sub$nets.stat-sub$orig.stat
+    subMeans = stats::aggregate(sub$subDiff, by = sub[grouping.variable], mean, na.rm = T)
     form = stats::as.formula(form)
     if(non.parametric){
       groupTest <- stats::kruskal.test(form, data = sub)
-      return(data.frame(net.names = name, p = groupTest$p.value))
+      toReturn = data.frame(net.names = name, p = groupTest$p.value)
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
-      return(data.frame(net.names = name, p = groupTest$"Pr(>F)"[1]))
+      toReturn = data.frame(net.names = name, p = groupTest$"Pr(>F)"[1])
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }
   }, toPlot = toPlot)
 
@@ -376,7 +381,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #' assesses if the network statistic is significantly different between groups,
  #' at each network manipulation.
  #'
- #' If the sample has 2 groups, this test is performed using Welch's t-test or
+ #' If the sample has 2 groups, this test is performed using a t-test or
  #' Wilcox test. If the sample has 3 or more groups, the test is performed using
  #' a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each
  #' network manipulation.
@@ -384,9 +389,9 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #' @param netSampleStatSet Input \code{NetSampleStatSet}
  #' @param grouping.variable character name of sample level grouping variable
  #' @param p.adjust character string for requested multiple comparisons
- #'   adjustment. Defaults to Benjamani-Hochberg
+ #'   adjustment. Defaults to none.
  #' @param non.parametric Logical. if true, test is performed using Wilcox test.
- #'   If false, Welch's t-test. Defaults to false.
+ #'   If false, t-test. Defaults to false.
  #'
  #' @return A data frame containing original and adjusted p.values.
  #' @export
@@ -397,7 +402,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
  #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
  #' group_test(GlobEff_GroupA_Net, grouping.variable = "group")
-group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.parametric = F){
+group_test = function(netSampleStatSet, grouping.variable, p.adjust = "none", non.parametric = F){
   toPlot <- to_data_frame(netSampleStatSet)
   form = paste0("nets.stat", "~", grouping.variable)
   form = stats::as.formula(form)
@@ -405,12 +410,19 @@ group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.
   results = lapply(net.names,FUN = function(name, toPlot){
 
     sub = toPlot[which(toPlot$net.names == name),]
+    subMeans = stats::aggregate(sub$nets.stat, by = sub[grouping.variable], mean, na.rm = T)
     if(non.parametric){
-      groupTest <- stats::kruskal.test(form, sub)
-      return(data.frame(net.names = name, p = groupTest$p.value))
+      groupTest <- stats::kruskal.test(form, data = sub)
+      toReturn = data.frame(net.names = name, p = groupTest$p.value)
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
-      return(data.frame(net.names = name, p = groupTest$"Pr(>F)"[1]))
+      toReturn = data.frame(net.names = name, p = groupTest$"Pr(>F)"[1])
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }
   }, toPlot = toPlot)
 
@@ -440,7 +452,7 @@ utils::globalVariables(c("net.names", "nets.stat", "adjusted.p"))
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' diff_test_ggPlot(GlobEff_GroupA_Net)
-diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F,non.parametric = F){
+diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F,non.parametric = F){
 
 toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- diff_test(netSampleStatSet, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -448,8 +460,8 @@ toPlot = to_data_frame(netSampleStatSet)
   toPlot$diff = toPlot$nets.stat - toPlot$orig.stat
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
-      }
+      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
+    }
   }
   if(sort == "mean"){
     agg <- stats::aggregate(toPlot$diff, by = toPlot["net.names"], mean, na.rm = T)
@@ -472,7 +484,7 @@ toPlot = to_data_frame(netSampleStatSet)
 
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold)))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                       paste0("p < ", p.threshold))) +ggplot2::theme_classic()
+                                                                                                       paste0("p < ", p.threshold))) +ggplot2::theme_classic()+ ggplot2::theme(legend.title=ggplot2::element_blank())
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0("Difference from Original ", toPlot$stat.name[1]))
@@ -502,7 +514,7 @@ toPlot = to_data_frame(netSampleStatSet)
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_test_ggPlot(GlobEff_GroupA_Net, "group")
-group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -510,7 +522,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
 
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
       }
   }
   if(sort == "mag"){
@@ -530,7 +542,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = nets.stat, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
                                                                                                        paste0("p < ", p.threshold)))+
-    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
+    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic() + ggplot2::theme(legend.title=ggplot2::element_blank())
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0(toPlot$stat.name[1]))
@@ -559,7 +571,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_diff_test_ggPlot(GlobEff_GroupA_Net, "group")
-group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_diff_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -567,9 +579,9 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
 
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
     }
-  }
+    }
   if(sort == "mag"){
     agg <- stats::aggregate(toPlot$adjusted.p, by = toPlot["net.names"], mean, na.rm = T)
     ord = order(agg$x, decreasing = T)
@@ -587,7 +599,7 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
                                                                                                                                                  paste0("p < ", p.threshold)))+
-    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
+    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()+ ggplot2::theme(legend.title=ggplot2::element_blank())
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0("Difference from Original ", toPlot$stat.name[1]))
@@ -597,72 +609,6 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   return(p)
 }
 
-
-#' Wrapper for pairwise comparison functions.
-#' @return
-#' @export
-#' @keywords internal
-
-pairwise_fun_wrapper <- function(index1, index2, nets, net.stat.fun, net.stat.fun.args ){
-  return(do.call(net.stat.fun, args = c(list(nets[[index1]], nets[[index2]]), net.stat.fun.args)))
-}
-
-
-setGeneric("pairwise_net_stat_apply", function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name, symmetric = TRUE, self.comp = FALSE) {
-  standardGeneric("pairwise_net_stat_apply")
-})
-
-#' @describeIn pairwise_net_stat_apply net_stat_apply for NetSample
-setMethod("pairwise_net_stat_apply", signature = c(netSet = "NetSample", net.stat.fun = "ANY",
-                                          net.stat.fun.args = "ANY", net.stat.name = "ANY",
-                                          symmetric = "ANY", self.comp = "ANY"),
-          function(netSet, net.stat.fun, net.stat.fun.args, net.stat.name, symmetric = TRUE, self.comp = FALSE){
-            if(missing(net.stat.name)){
-              net.stat.name = deparse(substitute(net.stat.fun))
-            }
-            net.stat.fun = match.fun(net.stat.fun)
-            if(missing(net.stat.fun.args)){
-              net.stat.fun.args = list()
-            }
-
-            nNets = length(netSet@nets)
-
-            if(symmetric){
-              index = t(combn(1:nNets, 2))
-            }else{
-              index = t(cbind(combn(1:nNets, 2), combn(nNets:1, 2)))
-            }
-
-            if(self.comp){
-              index = rbind(index,cbind(1:nNets, 1:nNets))
-            }
-
-
-
-
-
-
-            pairwise.vector = mapply(FUN = pairwise_fun_wrapper,index1 = index[,1], index2 = index[,2],
-                                     MoreArgs = list(nets = netSet@nets, net.stat.fun = net.stat.fun,
-                                                     net.stat.fun.args = net.stat.fun.args))
-
-            resMat = matrix(NA, nNets, nNets)
-
-            resMat[index] = pairwise.vector
-
-            #
-            # toReturn = methods::new("NetStatSet",fun = netSet@fun,
-            #                         fun.name = netSet@fun.name,
-            #                         fun.args = netSet@fun.args,
-            #                         stat.fun = net.stat.fun,
-            #                         stat.fun.name = net.stat.name,
-            #                         stat.fun.args = net.stat.fun.args,
-            #                         orig.net.name = netSet@orig.net.name,
-            #                         orig.net.stat = orig.stat,
-            #                         nets.stat = nets.stat,
-            #                         nets.names = netSet@nets.names)
-            return(resMat)
-          })
 
 
 
