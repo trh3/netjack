@@ -610,6 +610,29 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
 }
 
 
+#' Extract original statistics
+#'
+#' @param netSampleStatSet A NetSampleStatSet object
+#'
+#' @return A data frame consisting of net names and the original statistic
+#' @export
+#'
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#' sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' orig_statistics = orig_stats(GlobEff_GroupA_Net)
+#' orig_stats
+orig_stats <- function(netSampleStatSet){
 
+  net_data = to_dataframe(netSampleStatSet)
+
+  orig_stat = aggregate(net_data$orig.stat, by = net_data$net.name, mean, na.rm)
+
+  return(net_data)
+
+}
 
 

@@ -40,3 +40,5 @@ inst/doc
 .Rhistory
 .RData
 *.pper
+.Rproj.user
+*.pper
